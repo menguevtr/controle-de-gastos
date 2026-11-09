@@ -289,7 +289,7 @@ $("arquivo").addEventListener("change", e => {
   r.readAsText(f); e.target.value = "";
 });
 $("limpar").onclick = () => {
-  if (confirm("Apagar todos os lançamentos? Isso não pode ser desfeito.")) { dados = []; salvar(); render(); }
+  if (confirm("Tem certeza? Isso não pode ser desfeito.")) { dados = []; salvar(); render(); }
 };
 
 preencherCats(); render();
