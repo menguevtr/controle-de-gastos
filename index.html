@@ -284,7 +284,7 @@ $("arquivo").addEventListener("change", e => {
   const r = new FileReader();
   r.onload = () => {
     try { const n = JSON.parse(r.result); if (!Array.isArray(n)) throw 0; dados = n; salvar(); render(); }
-    catch(err){ alert("Arquivo inválido. Use um backup baixado por este app."); }
+    catch(err){ alert("Arquivo inválido. Use um backup baixado por este aplicativo."); }
   };
   r.readAsText(f); e.target.value = "";
 });
