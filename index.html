@@ -1,192 +1,27 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-humor="pos">
+<html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0e0c16">
 <title>Meus gastos</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Instrument+Sans:wght@400..700&display=swap" rel="stylesheet">
-<style>
-/* Ideia: o fundo é um degradê que muda com o mês (verde-mar quando sobra, brasa quando falta).
-   No centro, um anel de gastos que responde ao toque. Painéis de vidro por cima, texto claro. */
-@property --g1{syntax:"<color>";inherits:true;initial-value:#062f2d}
-@property --g2{syntax:"<color>";inherits:true;initial-value:#0b6460}
-@property --g3{syntax:"<color>";inherits:true;initial-value:#17357a}
-@property --brilho{syntax:"<color>";inherits:true;initial-value:#7df0c0}
-:root{
-  color-scheme:dark;
-  --g1:#062f2d; --g2:#0b6460; --g3:#17357a; --brilho:#7df0c0;   /* mês no azul */
-  --tinta:#ffffff; --suave:rgba(255,255,255,.74); --vidro:rgba(255,255,255,.09); --borda:rgba(255,255,255,.17);
-  --entra:#a4f7d2; --alerta:#ffc48a; --escuro:#0d1f24; --painel:#14232a;
-  --titulo:"Bricolage Grotesque","Trebuchet MS","Segoe UI",system-ui,sans-serif;
-  --texto:"Instrument Sans","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
-  transition:--g1 .9s ease,--g2 .9s ease,--g3 .9s ease,--brilho .9s ease;
-}
-:root[data-humor="neg"]{--g1:#3a0b2c; --g2:#8f1e42; --g3:#c9501d; --brilho:#ffc078}   /* mês no vermelho */
-:root[data-humor="vazio"]{--g1:#1a2038; --g2:#2e4070; --g3:#3a6f8f; --brilho:#a9d6ff} /* mês sem lançamentos */
-
-*{box-sizing:border-box}
-[hidden]{display:none!important}
-html{background:var(--g1);-webkit-text-size-adjust:100%}
-body{margin:0;min-height:100vh;color:var(--tinta);font:16px/1.5 var(--texto);-webkit-font-smoothing:antialiased}
-body::before,body::after{content:"";position:fixed;inset:0;pointer-events:none}
-body::before{z-index:-2;background:linear-gradient(155deg,var(--g1) 0%,var(--g2) 48%,var(--g3) 100%)}
-/* brilho que acompanha o cursor ou o dedo */
-body::after{z-index:-1;background:radial-gradient(560px circle at var(--mx,78%) var(--my,8%),color-mix(in srgb,var(--brilho) 30%,transparent),transparent 70%)}
-button,input,select{font:inherit;color:inherit}
-button{cursor:pointer}
-h1,h2,h3,p,ul{margin:0;padding:0}
-ul{list-style:none}
-:focus-visible{outline:2px solid #fff;outline-offset:2px}
-
-.pagina{max-width:880px;margin:0 auto;padding:22px 16px 112px;display:grid;gap:20px}
-.vidro{background:var(--vidro);border:1px solid var(--borda);border-radius:22px;-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
-
-/* topo */
-.topo{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.topo h1{font:700 1.15rem/1.2 var(--titulo);letter-spacing:-.01em}
-.mes{display:flex;align-items:center;gap:2px;padding:4px;border-radius:999px}
-.mes button{height:38px;border:0;background:none;border-radius:999px}
-.mes .seta{width:38px;display:grid;place-items:center}
-.mes .seta svg{width:16px;height:16px}
-.mes button:hover{background:rgba(255,255,255,.14)}
-.mes #mesTxt{min-width:150px;text-align:center;font-weight:600;padding:0 6px}
-.mes #mesTxt::first-letter{text-transform:uppercase}
-#hoje{border:1px solid var(--borda);background:none;border-radius:999px;padding:7px 14px;font-size:.9rem;font-weight:500}
-#hoje:hover{background:rgba(255,255,255,.12)}
-
-.aviso{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;border:1px dashed rgba(255,255,255,.5);border-radius:14px;padding:10px 14px;font-size:.92rem}
-.aviso button{border:0;background:none;font-weight:700;text-decoration:underline;text-underline-offset:3px;padding:4px 0}
-
-/* painel principal: anel + resumo */
-.painel{padding:24px;display:grid;gap:26px;align-items:center}
-.anel{position:relative;width:min(100%,300px);aspect-ratio:1;margin:0 auto;touch-action:manipulation}
-.anel svg{width:100%;height:100%;display:block;overflow:visible}
-.anel .trilha{stroke:rgba(255,255,255,.13)}
-.seg{cursor:pointer;pointer-events:stroke;transition:stroke-width .2s ease,opacity .2s ease;outline:none}
-.seg.on{stroke-width:25}
-.seg:focus-visible{stroke-width:25;filter:drop-shadow(0 0 4px #fff)}
-.tem .seg:not(.on){opacity:.3}
-.centro{position:absolute;inset:19%;display:grid;place-content:center;text-align:center;gap:1px;pointer-events:none}
-.centro small{color:var(--suave);font-size:.92rem;font-weight:500}
-.centro b{font:800 clamp(1.45rem,6.4vw,2rem)/1.1 var(--titulo);letter-spacing:-.03em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
-.centro span{color:var(--suave);font-size:.82rem;min-height:1.3em}
-
-.resumo{display:grid;gap:18px;min-width:0}
-.fluxo{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.tile{display:grid;gap:2px;text-align:left;border:1px solid var(--borda);background:rgba(255,255,255,.07);border-radius:16px;padding:12px 14px;min-width:0;transition:background .15s,transform .15s}
-.tile:hover{background:rgba(255,255,255,.15)}
-.tile:active{transform:scale(.98)}
-.tile[aria-pressed="true"]{background:#fff;color:var(--escuro);border-color:#fff}
-.tile small{font-size:.86rem;opacity:.78}
-.tile b{font:700 1.2rem/1.2 var(--titulo);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
-.tile.in:not([aria-pressed="true"]) b{color:var(--entra)}
-.comp{color:var(--suave);font-size:.93rem}
-
-.meta{display:grid;gap:8px}
-.meta-l{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
-.meta-l label{font-weight:600}
-.meta-l output{font-variant-numeric:tabular-nums;font-weight:600}
-.barra{height:10px;border-radius:5px;background:rgba(255,255,255,.14);overflow:hidden}
-.barra i{display:block;height:100%;width:0;border-radius:5px;background:var(--brilho);transition:width .25s ease,background .25s}
-.barra.estourou i{background:var(--alerta)}
-#meta{width:100%;margin:0;accent-color:#fff;height:28px;cursor:grab}
-#metaTxt{color:var(--suave);font-size:.9rem}
-
-.chips{display:flex;flex-wrap:wrap;gap:8px;grid-column:1/-1}
-.chip{display:flex;align-items:center;gap:7px;border:1px solid var(--borda);background:rgba(255,255,255,.06);border-radius:999px;padding:6px 12px 6px 10px;font-size:.9rem;transition:background .15s,transform .15s}
-.chip:hover,.chip.on{background:rgba(255,255,255,.18)}
-.chip:active{transform:scale(.97)}
-.chip[aria-pressed="true"]{background:#fff;color:var(--escuro);border-color:#fff}
-.chip i{width:10px;height:10px;border-radius:50%;flex:none}
-.chip em{font-style:normal;opacity:.72;font-variant-numeric:tabular-nums}
-.vazio{color:var(--suave)}
-
-/* lançamentos */
-.extrato{padding:18px 20px 10px;display:grid;gap:6px}
-.cab{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.cab h2{font:700 1.2rem/1.2 var(--titulo);margin-right:auto}
-.filtro{border:1px solid #fff;background:none;border-radius:999px;padding:5px 12px;font-size:.88rem;font-weight:600}
-.primario{border:0;background:#fff;color:var(--escuro);border-radius:999px;padding:11px 20px;font-weight:700;transition:transform .15s}
-.primario:hover{transform:translateY(-1px)}
-.primario:active{transform:scale(.98)}
-.dia h3{display:flex;justify-content:space-between;gap:12px;align-items:baseline;font:600 .85rem/1.4 var(--texto);color:var(--suave);padding:16px 0 6px;border-bottom:1px solid var(--borda)}
-.dia h3 span:first-child{display:block}
-.dia h3 span:first-child::first-letter{text-transform:uppercase}
-.dia h3 .sub{font-variant-numeric:tabular-nums;white-space:nowrap}
-.lanc{display:flex;align-items:center;gap:12px;width:calc(100% + 20px);margin:0 -10px;padding:11px 10px;border:0;background:none;text-align:left;border-radius:12px;transition:background .15s}
-.lanc:hover{background:rgba(255,255,255,.1)}
-.lanc i{width:10px;height:10px;border-radius:50%;flex:none}
-.lanc .d{flex:1;min-width:0;display:grid}
-.lanc b{font-weight:600;overflow-wrap:anywhere}
-.lanc small{color:var(--suave);font-size:.86rem}
-.lanc .v{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
-.lanc .v.in{color:var(--entra)}
-.extrato > #lista > .vazio{padding:16px 0 12px}
-
-.rodape{display:grid;gap:8px;padding:4px 4px 0}
-.rodape p{color:var(--suave);font-size:.88rem;max-width:62ch}
-.acoes{display:flex;gap:18px;flex-wrap:wrap}
-.acoes button{border:0;background:none;padding:6px 0;font-size:.92rem;font-weight:600;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(255,255,255,.5)}
-.acoes button:hover{text-decoration-color:#fff}
-
-/* diálogos */
-dialog{border:1px solid var(--borda);border-radius:20px;padding:0;width:min(430px,calc(100% - 24px));background:var(--painel);color:var(--tinta)}
-dialog::backdrop{background:rgba(5,12,16,.6);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
-.dlg{padding:22px;display:grid;gap:16px}
-.dlg h2{font:700 1.3rem/1.2 var(--titulo)}
-.campo{display:grid;gap:5px;font-size:.88rem;color:var(--suave);font-weight:500}
-.dlg input:not([type=radio]),.dlg select{background:rgba(255,255,255,.07);border:1px solid var(--borda);border-radius:12px;padding:11px 12px;color:var(--tinta);width:100%;min-width:0}
-.dlg select option{background:var(--painel)}
-.dlg input:focus-visible,.dlg select:focus-visible{outline:2px solid #fff;outline-offset:0}
-#valor{font:700 1.7rem/1.2 var(--titulo);font-variant-numeric:tabular-nums}
-.dupla{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.tipo{display:grid;grid-template-columns:1fr 1fr;background:rgba(255,255,255,.07);border-radius:999px;padding:4px}
-.tipo input{position:absolute;opacity:0;width:0;height:0}
-.tipo span{display:block;text-align:center;padding:9px;font-weight:600;cursor:pointer;border-radius:999px;color:var(--suave)}
-.tipo input:checked + span{background:#fff;color:var(--escuro)}
-.tipo input:focus-visible + span{outline:2px solid #fff;outline-offset:2px}
-.erro{color:var(--alerta);font-size:.9rem;font-weight:600}
-.botoes{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.botoes .primario{margin-left:auto}
-.quieto{border:1px solid var(--borda);background:none;border-radius:999px;padding:10px 18px;font-weight:500}
-.quieto:hover{background:rgba(255,255,255,.1)}
-.excluir{border:0;background:none;color:var(--alerta);font-weight:700;padding:10px 0}
-.destrutivo{background:var(--alerta)}
-
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:86px;z-index:5;display:flex;gap:16px;align-items:center;background:#fff;color:var(--escuro);border-radius:999px;padding:11px 20px;font-size:.93rem;font-weight:500;max-width:calc(100% - 32px);box-shadow:0 10px 30px rgba(0,0,0,.3)}
-.toast button{border:0;background:none;color:inherit;font-weight:800;padding:0;white-space:nowrap;text-decoration:underline;text-underline-offset:3px}
-.toast button:focus-visible{outline-color:var(--escuro)}
-
-@media (max-width:719px){
-  #novo{position:fixed;left:16px;right:16px;bottom:16px;z-index:4;padding:15px;box-shadow:0 10px 28px rgba(0,0,0,.35)}
-}
-@media (min-width:720px){
-  .pagina{padding:36px 24px 64px;gap:24px}
-  .painel{grid-template-columns:300px minmax(0,1fr);padding:30px;column-gap:36px}
-  .toast{bottom:28px}
-}
-@media (max-width:400px){ .dupla{grid-template-columns:1fr} }
-@media (prefers-reduced-motion: no-preference){
-  dialog[open]{animation:abrir .2s ease-out}
-  @keyframes abrir{from{transform:translateY(12px) scale(.98);opacity:0}to{transform:none;opacity:1}}
-  .seg{animation:surgir .5s ease-out backwards}
-  @keyframes surgir{from{opacity:0;stroke-width:4}}
-}
-@media (prefers-reduced-motion: reduce){ :root{transition:none} }
-</style>
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <main class="pagina" id="pagina">
   <header class="topo">
     <h1>Meus gastos</h1>
-    <button id="hoje" type="button" hidden>Voltar para este mês</button>
-    <div class="mes vidro">
+    <div class="mes">
       <button id="ant" class="seta" type="button" aria-label="Mês anterior"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3 5 8l5 5"/></svg></button>
       <span id="mesTxt" aria-live="polite"></span>
       <button id="prox" class="seta" type="button" aria-label="Próximo mês"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 3 5 5-5 5"/></svg></button>
     </div>
+    <button id="hoje" class="quieto" type="button" hidden>Voltar para este mês</button>
+    <button class="primario" id="novo" type="button">Novo lançamento</button>
   </header>
 
   <div class="aviso" id="aviso" hidden>
@@ -194,36 +29,72 @@ dialog::backdrop{background:rgba(5,12,16,.6);-webkit-backdrop-filter:blur(4px);b
     <button type="button" id="zerar">Apagar exemplos e começar</button>
   </div>
 
-  <section class="painel vidro" aria-label="Resumo do mês">
-    <div class="anel" id="anel">
-      <svg viewBox="0 0 200 200" role="group" aria-label="Gastos do mês por categoria"><g transform="rotate(-90 100 100)" id="segs"></g></svg>
-      <div class="centro" aria-live="polite"><small id="cRot"></small><b id="cVal"></b><span id="cSub"></span></div>
-    </div>
-
-    <div class="resumo">
-      <div class="fluxo">
-        <button type="button" class="tile in" data-tipo="receita" aria-pressed="false"><small>Entrou</small><b id="rec"></b></button>
-        <button type="button" class="tile" data-tipo="despesa" aria-pressed="false"><small>Saiu</small><b id="desp"></b></button>
-      </div>
-      <p class="comp" id="comp" hidden></p>
-      <div class="meta">
-        <div class="meta-l"><label for="meta">Meta de gastos do mês</label><output id="metaVal" for="meta"></output></div>
-        <div class="barra" id="barra"><i></i></div>
-        <input type="range" id="meta" min="0" max="5000" step="50" value="0">
-        <p id="metaTxt"></p>
-      </div>
-    </div>
-
-    <div class="chips" id="chips"></div>
+  <!-- números do mês -->
+  <section class="kpis" aria-label="Resumo do mês">
+    <article class="card kpi" id="kSaldo" data-estado="vazio" aria-live="polite">
+      <small id="cRot"></small>
+      <b id="cVal"></b>
+      <span id="cSub"></span>
+    </article>
+    <button type="button" class="card kpi tile" data-tipo="receita" aria-pressed="false">
+      <small><i class="ponto" style="background:var(--entra)"></i>Entrou</small>
+      <b id="rec"></b>
+      <span>Toque para ver só o que entrou</span>
+    </button>
+    <button type="button" class="card kpi tile" data-tipo="despesa" aria-pressed="false">
+      <small><i class="ponto" style="background:var(--sai)"></i>Saiu</small>
+      <b id="desp"></b>
+      <span id="comp">Toque para ver só o que saiu</span>
+    </button>
+    <article class="card kpi meta">
+      <div class="meta-l"><label for="meta">Meta de gastos</label><output id="metaVal" for="meta"></output></div>
+      <div class="barra" id="barra"><i></i></div>
+      <input type="range" id="meta" min="0" max="5000" step="50" value="0">
+      <span id="metaTxt"></span>
+    </article>
   </section>
 
-  <section class="extrato vidro" aria-labelledby="tLanc">
-    <div class="cab">
-      <h2 id="tLanc">Lançamentos</h2>
-      <button class="filtro" id="limparFiltro" type="button" hidden></button>
-      <button class="primario" id="novo" type="button">Novo lançamento</button>
-    </div>
-    <div id="lista"></div>
+  <section class="grade">
+    <article class="card g-rosca" aria-labelledby="tRosca">
+      <h2 id="tRosca">Para onde foi o dinheiro</h2>
+      <div class="rosca" id="anel">
+        <svg viewBox="0 0 200 200" role="group" aria-label="Gastos do mês por categoria"><g transform="rotate(-90 100 100)" id="segs"></g></svg>
+        <div class="centro" aria-live="polite"><small id="rRot"></small><b id="rVal"></b><span id="rSub"></span></div>
+      </div>
+      <div class="chips" id="chips"></div>
+    </article>
+
+    <article class="card g-ritmo" aria-labelledby="tRitmo">
+      <h2 id="tRitmo">Gasto acumulado no mês</h2>
+      <p class="nota" id="ritmoNota"></p>
+      <div class="grafico" id="ritmo"></div>
+    </article>
+
+    <article class="card g-enxame" aria-labelledby="tEnx">
+      <div class="cab">
+        <h2 id="tEnx">Enxame de gastos</h2>
+        <div class="seletor" role="group" aria-label="Organizar o enxame">
+          <button type="button" data-modo="dia" aria-pressed="true">Por dia</button>
+          <button type="button" data-modo="categoria" aria-pressed="false">Por categoria</button>
+        </div>
+      </div>
+      <p class="nota">Cada bolha é um gasto, e o tamanho mostra o valor. Arraste para brincar, clique para editar.</p>
+      <div class="enxame" id="enxame"></div>
+    </article>
+
+    <article class="card g-tend" aria-labelledby="tTend">
+      <h2 id="tTend">Últimos 6 meses</h2>
+      <div class="legenda"><span><i style="background:var(--entra)"></i>Entrou</span><span><i style="background:var(--sai)"></i>Saiu</span></div>
+      <div class="grafico" id="tend"></div>
+    </article>
+
+    <article class="card g-extrato" aria-labelledby="tLanc">
+      <div class="cab">
+        <h2 id="tLanc">Lançamentos</h2>
+        <button class="filtro" id="limparFiltro" type="button" hidden></button>
+      </div>
+      <div id="lista"></div>
+    </article>
   </section>
 
   <footer class="rodape">
@@ -237,6 +108,7 @@ dialog::backdrop{background:rgba(5,12,16,.6);-webkit-backdrop-filter:blur(4px);b
   </footer>
 </main>
 
+<div class="dica" id="dica" role="tooltip" hidden></div>
 <div class="toast" id="toast" role="status" hidden><span id="toastTxt"></span><button type="button" id="toastBtn" hidden></button></div>
 
 <dialog id="dlg" aria-labelledby="dlgT">
@@ -276,412 +148,9 @@ dialog::backdrop{background:rgba(5,12,16,.6);-webkit-backdrop-filter:blur(4px);b
   </div>
 </dialog>
 
-<script>
-const CATS = {
-  despesa: ["Moradia","Alimentação","Transporte","Saúde","Lazer","Educação","Contas fixas","Outros"],
-  receita: ["Renda mensal","Extra","Investimentos","Outros"]
-};
-const CORES = { "Moradia":"#ffd866","Alimentação":"#7ef0c5","Transporte":"#7cc8ff","Saúde":"#ff9fb8",
-  "Lazer":"#ffb27a","Educação":"#c9b8ff","Contas fixas":"#d4f58a","Outros":"#dfe6ee" };
-const cor = c => CORES[c] || "#dfe6ee";
-const CHAVE = "gastos-v1", CHAVE_USO = "gastos-v1-iniciado", CHAVE_META = "gastos-v1-meta";
-const CIRC = 2 * Math.PI * 80;
-const $ = id => document.getElementById(id);
-const brl = n => n.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
-const pad = n => String(n).padStart(2,"0");
-const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const ISO = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-const hojeISO = () => ISO(new Date());
-const novoId = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
-const c2 = n => Math.round(n * 100) / 100;
-const soma = arr => c2(arr.reduce((s,l) => s + l.valor, 0));
-const nomeMes = (a,m) => new Date(a,m,1).toLocaleDateString("pt-BR",{month:"long"});
-const calmo = matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-/* Aceita 25,90 · 25.90 · 1.234,56 · 1234 */
-function lerValor(txt){
-  let s = String(txt).replace(/[R$\s]/g,"");
-  if (s.includes(",")) s = s.replace(/\./g,"").replace(",",".");
-  else if (/^\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g,"");
-  if (!/^\d*\.?\d+$/.test(s)) return NaN;
-  return c2(parseFloat(s));
-}
-
-/* Só deixa passar lançamentos bem formados (protege contra backup estragado) */
-function higienizar(lista){
-  return lista.filter(l => l && (l.tipo === "despesa" || l.tipo === "receita")
-      && typeof l.valor === "number" && isFinite(l.valor) && l.valor > 0
-      && typeof l.data === "string" && /^\d{4}-\d{2}-\d{2}$/.test(l.data))
-    .map(l => ({ id: String(l.id ?? novoId()), tipo: l.tipo,
-      descricao: String(l.descricao ?? "").slice(0,60) || "Sem descrição",
-      valor: c2(l.valor),
-      categoria: String(l.categoria ?? "Outros").slice(0,40) || "Outros", data: l.data }));
-}
-
-function exemplos(){
-  const h = new Date(), y = h.getFullYear(), m = h.getMonth(), max = h.getDate();
-  const cur = d => ISO(new Date(y, m, Math.min(d, max)));
-  const ant = d => ISO(new Date(y, m - 1, d));
-  return [
-    ["receita","Salário",4200,"Renda mensal",cur(5)],
-    ["despesa","Aluguel",1450,"Moradia",cur(5)],
-    ["despesa","Curso de inglês",280,"Educação",cur(2)],
-    ["despesa","Recarga do bilhete",96,"Transporte",cur(3)],
-    ["despesa","Conta de luz",148.9,"Contas fixas",cur(7)],
-    ["despesa","Mercado da semana",312.4,"Alimentação",cur(8)],
-    ["despesa","Farmácia",54.7,"Saúde",cur(9)],
-    ["despesa","Cinema",62,"Lazer",cur(9)],
-    ["receita","Freela de design",650,"Extra",cur(10)],
-    ["despesa","Padaria",23.5,"Alimentação",cur(10)],
-    ["receita","Salário",4200,"Renda mensal",ant(5)],
-    ["despesa","Aluguel",1450,"Moradia",ant(5)],
-    ["despesa","Mercado",780,"Alimentação",ant(12)],
-    ["despesa","Conta de luz",162.3,"Contas fixas",ant(8)],
-    ["despesa","Transporte",190,"Transporte",ant(15)],
-    ["despesa","Show",240,"Lazer",ant(20)],
-    ["despesa","Curso de inglês",280,"Educação",ant(2)],
-    ["despesa","Conserto do carro",2350,"Transporte",ant(24)]
-  ].map(([tipo,descricao,valor,categoria,data]) => ({ id: novoId(), tipo, descricao, valor, categoria, data }));
-}
-
-let dados = [], exemplo = false, meta = 0;
-try {
-  const salvo = JSON.parse(localStorage.getItem(CHAVE));
-  if (Array.isArray(salvo)) dados = higienizar(salvo);
-  meta = Math.max(0, Number(localStorage.getItem(CHAVE_META)) || 0);
-} catch(e) {}
-let jaUsou = false;
-try { jaUsou = !!localStorage.getItem(CHAVE_USO); } catch(e) {}
-if (!dados.length && !jaUsou) { dados = exemplos(); exemplo = true; meta = 3000; }
-
-function salvar(){
-  if (exemplo) return;
-  try { localStorage.setItem(CHAVE, JSON.stringify(dados)); localStorage.setItem(CHAVE_USO, "1"); localStorage.setItem(CHAVE_META, String(meta)); } catch(e) {}
-}
-function sairDoExemplo(){ if (exemplo) { exemplo = false; dados = []; meta = 0; } }
-
-const agora = new Date();
-let ano = agora.getFullYear(), mes = agora.getMonth();
-let filtroCat = null, filtroTipo = null, editando = null;
-let mesAtual = { saldo: 0, desp: 0, porCat: {}, vazio: true };   /* números do mês na tela */
-
-function rotuloDia(iso){
-  if (iso === hojeISO()) return "Hoje";
-  const o = new Date(); o.setDate(o.getDate() - 1);
-  if (iso === ISO(o)) return "Ontem";
-  const [y,m,d] = iso.split("-").map(Number);
-  return new Date(y, m-1, d).toLocaleDateString("pt-BR",{weekday:"long",day:"numeric",month:"long"});
-}
-
-/* número que conta até o valor novo */
-let quadro, mostrado = 0;
-function contar(alvo){
-  cancelAnimationFrame(quadro);
-  if (calmo){ mostrado = alvo; $("cVal").textContent = brl(Math.abs(alvo)); return; }
-  const de = mostrado, t0 = performance.now(), dur = 650;
-  const passo = t => {
-    const k = Math.min((t - t0) / dur, 1), e = 1 - Math.pow(1 - k, 3);
-    mostrado = de + (alvo - de) * e;
-    $("cVal").textContent = brl(Math.abs(c2(mostrado)));
-    if (k < 1) quadro = requestAnimationFrame(passo); else mostrado = alvo;
-  };
-  quadro = requestAnimationFrame(passo);
-}
-
-/* centro do anel: saldo do mês, ou a categoria em destaque */
-function centro(cat, animar){
-  const a = mesAtual;
-  if (cat && a.porCat[cat] != null){
-    cancelAnimationFrame(quadro);
-    $("cRot").textContent = cat;
-    $("cVal").textContent = brl(a.porCat[cat]);
-    $("cSub").textContent = `${Math.round(a.porCat[cat] / a.desp * 100)}% do que saiu`;
-  } else if (a.vazio){
-    cancelAnimationFrame(quadro); mostrado = 0;
-    $("cRot").textContent = "Nada lançado"; $("cVal").textContent = brl(0); $("cSub").textContent = "neste mês";
-  } else {
-    $("cRot").textContent = a.saldo > 0 ? "Sobrou" : a.saldo < 0 ? "Faltou" : "Fechou em";
-    $("cSub").textContent = a.saldo < 0 ? "saiu mais do que entrou" : "neste mês";
-    if (animar) contar(a.saldo); else { cancelAnimationFrame(quadro); mostrado = a.saldo; $("cVal").textContent = brl(Math.abs(a.saldo)); }
-  }
-}
-function destacar(cat){
-  const alvo = cat || filtroCat;
-  $("anel").classList.toggle("tem", !!alvo);
-  document.querySelectorAll(".seg,.chip").forEach(el => el.classList.toggle("on", !!alvo && el.dataset.cat === alvo));
-  centro(alvo, false);
-}
-
-function pintarMeta(){
-  const desp = mesAtual.desp, b = $("barra");
-  $("metaVal").textContent = meta > 0 ? brl(meta) : "sem meta";
-  b.firstElementChild.style.width = meta > 0 ? Math.min(desp / meta, 1) * 100 + "%" : "0%";
-  b.classList.toggle("estourou", meta > 0 && desp > meta);
-  $("metaTxt").textContent = meta <= 0 ? "Arraste para definir quanto você quer gastar por mês."
-    : desp > meta ? `Passou ${brl(c2(desp - meta))} da meta.`
-    : `Ainda dá para gastar ${brl(c2(meta - desp))}.`;
-}
-
-function render(animar = true){
-  const ym = `${ano}-${pad(mes+1)}`;
-  $("mesTxt").textContent = `${nomeMes(ano,mes)} de ${ano}`;
-  const h = new Date();
-  $("hoje").hidden = (ano === h.getFullYear() && mes === h.getMonth());
-  $("aviso").hidden = !exemplo;
-
-  const doMes = dados.filter(l => l.data.startsWith(ym));
-  const despesas = doMes.filter(l => l.tipo === "despesa");
-  const rec = soma(doMes.filter(l => l.tipo === "receita")), desp = soma(despesas);
-  const saldo = c2(rec - desp);
-  const porCat = {};
-  despesas.forEach(l => porCat[l.categoria] = c2((porCat[l.categoria] || 0) + l.valor));
-  const ord = Object.entries(porCat).sort((a,b) => b[1] - a[1]);
-  mesAtual = { saldo, desp, porCat, vazio: !doMes.length };
-  if (filtroCat && !(filtroCat in porCat)) filtroCat = null;
-
-  /* o degradê acompanha o mês */
-  document.documentElement.dataset.humor = !doMes.length ? "vazio" : saldo < 0 ? "neg" : "pos";
-
-  $("rec").textContent = brl(rec);
-  $("desp").textContent = brl(desp);
-  document.querySelectorAll(".tile").forEach(t => t.setAttribute("aria-pressed", String(filtroTipo === t.dataset.tipo)));
-
-  /* comparação com o mês anterior */
-  const dAnt = new Date(ano, mes - 1, 1);
-  const ymAnt = `${dAnt.getFullYear()}-${pad(dAnt.getMonth()+1)}`;
-  const despAnt = soma(dados.filter(l => l.tipo === "despesa" && l.data.startsWith(ymAnt)));
-  const c = $("comp");
-  if (desp > 0 && despAnt > 0){
-    const dif = c2(desp - despAnt), quando = nomeMes(dAnt.getFullYear(), dAnt.getMonth());
-    c.textContent = dif === 0 ? `Você gastou o mesmo que em ${quando}.`
-      : `Você gastou ${brl(Math.abs(dif))} a ${dif > 0 ? "mais" : "menos"} que em ${quando}.`;
-    c.hidden = false;
-  } else c.hidden = true;
-
-  /* anel */
-  let ini = 0;
-  $("segs").innerHTML = `<circle class="trilha" cx="100" cy="100" r="80" fill="none" stroke-width="18"/>` +
-    ord.map(([cat,v], i) => {
-      const len = v / desp * CIRC, vis = Math.max(len - (ord.length > 1 ? 3 : 0), 1.5);
-      const s = `<circle class="seg" cx="100" cy="100" r="80" fill="none" stroke="${cor(cat)}" stroke-width="18"
-        stroke-dasharray="${vis.toFixed(2)} ${(CIRC - vis).toFixed(2)}" stroke-dashoffset="${(-ini).toFixed(2)}"
-        style="animation-delay:${i * 60}ms" data-cat="${esc(cat)}" tabindex="0" role="button"
-        aria-label="${esc(cat)}: ${brl(v)}, ${Math.round(v / desp * 100)}% do que saiu. Filtrar lançamentos."/>`;
-      ini += len; return s;
-    }).join("");
-
-  /* categorias */
-  $("chips").innerHTML = ord.length ? ord.map(([cat,v]) =>
-    `<button type="button" class="chip" data-cat="${esc(cat)}" aria-pressed="${filtroCat === cat}">
-      <i style="background:${cor(cat)}"></i>${esc(cat)} <em>${Math.round(v / desp * 100)}%</em></button>`).join("")
-    : '<p class="vazio">Nenhuma despesa neste mês.</p>';
-
-  /* meta */
-  const r = $("meta");
-  r.max = Math.max(3000, Math.ceil(Math.max(meta, desp) * 1.6 / 500) * 500);
-  r.value = meta;
-  pintarMeta();
-
-  /* lista agrupada por dia */
-  const f = $("limparFiltro"), rotFiltro = filtroCat || (filtroTipo === "receita" ? "o que entrou" : filtroTipo === "despesa" ? "o que saiu" : "");
-  f.hidden = !rotFiltro;
-  if (rotFiltro){ f.textContent = `Só ${rotFiltro} ✕`; f.setAttribute("aria-label", `Mostrar todos os lançamentos`); }
-  const visiveis = doMes.filter(l => filtroCat ? (l.tipo === "despesa" && l.categoria === filtroCat) : filtroTipo ? l.tipo === filtroTipo : true)
-    .sort((a,b) => b.data.localeCompare(a.data));
-  const dias = [];
-  visiveis.forEach(l => { const u = dias[dias.length-1]; if (u && u.data === l.data) u.itens.push(l); else dias.push({data:l.data, itens:[l]}); });
-  $("lista").innerHTML = dias.length ? dias.map(d => {
-    const liq = c2(soma(d.itens.filter(l => l.tipo === "receita")) - soma(d.itens.filter(l => l.tipo === "despesa")));
-    return `<section class="dia"><h3><span>${esc(rotuloDia(d.data))}</span><span class="sub">${liq < 0 ? "− " : "+ "}${brl(Math.abs(liq))}</span></h3><ul>${
-      d.itens.map(l => `<li><button type="button" class="lanc" data-id="${esc(l.id)}" aria-label="Editar ${esc(l.descricao)}">
-        <i style="background:${l.tipo === "receita" ? "var(--entra)" : cor(l.categoria)}"></i>
-        <span class="d"><b>${esc(l.descricao)}</b><small>${esc(l.categoria)}</small></span>
-        <span class="v ${l.tipo === "receita" ? "in" : ""}">${l.tipo === "receita" ? "+ " : ""}${brl(l.valor)}</span></button></li>`).join("")
-    }</ul></section>`;
-  }).join("") : `<p class="vazio">${doMes.length ? "Nenhum lançamento com esse filtro." : `Nenhum lançamento em ${esc(nomeMes(ano,mes))}. Use “Novo lançamento” para registrar o primeiro.`}</p>`;
-
-  $("anel").classList.toggle("tem", !!filtroCat);
-  document.querySelectorAll(".seg,.chip").forEach(el => el.classList.toggle("on", !!filtroCat && el.dataset.cat === filtroCat));
-  centro(filtroCat, animar);
-}
-
-/* trocar de mês: setas, teclado e deslizar */
-function mover(d){ mes += d; if (mes < 0){ mes = 11; ano--; } if (mes > 11){ mes = 0; ano++; } filtroCat = filtroTipo = null; render(); }
-$("ant").onclick = () => mover(-1);
-$("prox").onclick = () => mover(1);
-$("hoje").onclick = () => { const h = new Date(); ano = h.getFullYear(); mes = h.getMonth(); filtroCat = filtroTipo = null; render(); };
-document.addEventListener("keydown", e => {
-  if (document.querySelector("dialog[open]") || /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) return;
-  if (e.key === "ArrowLeft") mover(-1);
-  if (e.key === "ArrowRight") mover(1);
-});
-let toque = null;
-$("pagina").addEventListener("touchstart", e => {
-  toque = e.target.closest("input,.anel") ? null : { x: e.touches[0].clientX, y: e.touches[0].clientY };
-}, {passive:true});
-$("pagina").addEventListener("touchend", e => {
-  if (!toque) return;
-  const dx = e.changedTouches[0].clientX - toque.x, dy = e.changedTouches[0].clientY - toque.y;
-  if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 2) mover(dx < 0 ? 1 : -1);
-  toque = null;
-}, {passive:true});
-
-/* brilho do fundo segue o ponteiro */
-if (!calmo) addEventListener("pointermove", e => {
-  const s = document.documentElement.style;
-  s.setProperty("--mx", e.clientX + "px"); s.setProperty("--my", e.clientY + "px");
-}, {passive:true});
-
-/* anel e categorias: passar o mouse destaca, clicar filtra */
-function alternarCat(cat){ filtroCat = filtroCat === cat ? null : cat; filtroTipo = null; render(false); }
-for (const id of ["segs","chips"]){
-  const el = $(id);
-  el.addEventListener("pointerover", e => { const a = e.target.closest("[data-cat]"); if (a && e.pointerType !== "touch") destacar(a.dataset.cat); });
-  el.addEventListener("pointerout", e => { if (e.pointerType !== "touch") destacar(null); });
-  el.addEventListener("focusin", e => { const a = e.target.closest("[data-cat]"); if (a) destacar(a.dataset.cat); });
-  el.addEventListener("focusout", () => destacar(null));
-  el.addEventListener("click", e => { const a = e.target.closest("[data-cat]"); if (a) alternarCat(a.dataset.cat); });
-}
-$("segs").addEventListener("keydown", e => {
-  if ((e.key === "Enter" || e.key === " ") && e.target.dataset.cat){ e.preventDefault(); alternarCat(e.target.dataset.cat); }
-});
-document.querySelectorAll(".tile").forEach(t => t.onclick = () => {
-  filtroTipo = filtroTipo === t.dataset.tipo ? null : t.dataset.tipo; filtroCat = null; render(false);
-});
-$("limparFiltro").onclick = () => { filtroCat = filtroTipo = null; render(false); };
-$("zerar").onclick = () => { sairDoExemplo(); salvar(); render(); avisar("Exemplos apagados. Agora é com você."); };
-
-/* meta: atualiza enquanto arrasta, salva ao soltar */
-$("meta").addEventListener("input", e => { meta = Number(e.target.value) || 0; pintarMeta(); });
-$("meta").addEventListener("change", () => { salvar(); render(false); });
-
-/* avisos com ação de desfazer */
-let relogio;
-function avisar(txt, acao, fn){
-  clearTimeout(relogio);
-  $("toastTxt").textContent = txt;
-  const b = $("toastBtn");
-  b.hidden = !acao;
-  if (acao){ b.textContent = acao; b.onclick = () => { $("toast").hidden = true; fn(); }; }
-  $("toast").hidden = false;
-  relogio = setTimeout(() => $("toast").hidden = true, acao ? 7000 : 4000);
-}
-
-/* confirmação feita na própria página */
-function confirmar(titulo, texto, rotulo){
-  return new Promise(ok => {
-    const d = $("conf");
-    $("confT").textContent = titulo; $("confTxt").textContent = texto; $("confSim").textContent = rotulo;
-    const fim = v => { $("confSim").onclick = $("confNao").onclick = d.onclose = null; if (d.open) d.close(); ok(v); };
-    $("confSim").onclick = () => fim(true);
-    $("confNao").onclick = () => fim(false);
-    d.onclose = () => fim(false);
-    d.showModal(); $("confNao").focus();
-  });
-}
-
-/* formulário de lançamento */
-const tipoAtual = () => document.querySelector('input[name="tipo"]:checked').value;
-function preencherCats(sel){
-  const lista = CATS[tipoAtual()].slice();
-  if (sel && !lista.includes(sel)) lista.push(sel);
-  $("categoria").innerHTML = lista.map(c => `<option${c === sel ? " selected" : ""}>${esc(c)}</option>`).join("");
-}
-document.querySelectorAll('input[name="tipo"]').forEach(r => r.addEventListener("change", () => preencherCats()));
-
-function abrir(l){
-  editando = l ? l.id : null;
-  $("form").reset(); $("erro").hidden = true;
-  $("dlgT").textContent = l ? "Editar lançamento" : "Novo lançamento";
-  $("excluir").hidden = !l;
-  if (l){
-    $(l.tipo === "receita" ? "tRec" : "tDesp").checked = true;
-    $("valor").value = l.valor.toLocaleString("pt-BR",{minimumFractionDigits:2, useGrouping:false});
-    $("descricao").value = l.descricao; $("data").value = l.data;
-    preencherCats(l.categoria);
-  } else {
-    if (filtroTipo === "receita") $("tRec").checked = true;
-    const h = new Date();
-    $("data").value = (ano === h.getFullYear() && mes === h.getMonth()) ? hojeISO() : `${ano}-${pad(mes+1)}-01`;
-    preencherCats(filtroCat || undefined);
-  }
-  $("dlg").showModal();
-  if (!l) $("valor").focus();
-}
-$("novo").onclick = () => abrir(null);
-$("cancelar").onclick = () => $("dlg").close();
-document.querySelectorAll("dialog").forEach(d => d.addEventListener("click", e => { if (e.target === d) d.close(); }));
-$("lista").addEventListener("click", e => {
-  const b = e.target.closest(".lanc"); if (!b) return;
-  const l = dados.find(x => x.id === b.dataset.id); if (l) abrir(l);
-});
-
-function falha(txt, campo){ $("erro").textContent = txt; $("erro").hidden = false; $(campo).focus(); }
-
-$("form").addEventListener("submit", e => {
-  e.preventDefault();
-  const valor = lerValor($("valor").value), descricao = $("descricao").value.trim(), data = $("data").value;
-  if (!(valor > 0)) return falha("Digite um valor maior que zero, como 25,90.", "valor");
-  if (!descricao) return falha("Escreva uma descrição curta, como “Mercado”.", "descricao");
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(data)) return falha("Escolha a data do lançamento.", "data");
-  const campos = { tipo: tipoAtual(), descricao, valor, categoria: $("categoria").value, data };
-  if (editando){
-    const l = dados.find(x => x.id === editando);
-    if (l) Object.assign(l, campos);
-  } else {
-    sairDoExemplo();
-    dados.push({ id: novoId(), ...campos });
-  }
-  salvar();
-  const [a,m] = data.split("-"); ano = +a; mes = +m - 1;
-  filtroCat = filtroTipo = null;
-  $("dlg").close(); render(); avisar("Lançamento salvo.");
-});
-
-$("excluir").onclick = () => {
-  const i = dados.findIndex(x => x.id === editando); if (i < 0) return;
-  const [fora] = dados.splice(i, 1);
-  salvar(); $("dlg").close(); render();
-  avisar("Lançamento excluído.", "Desfazer", () => { dados.push(fora); salvar(); render(); });
-};
-
-/* backup */
-$("exportar").onclick = () => {
-  if (exemplo || !dados.length) return avisar("Ainda não há lançamentos seus para guardar.");
-  try {
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(new Blob([JSON.stringify(dados, null, 2)], {type:"application/json"}));
-    a.download = `gastos-backup-${hojeISO()}.json`; document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-    avisar("Backup baixado.");
-  } catch(err){ avisar("Não deu para baixar o backup. Tente de novo em outro navegador."); }
-};
-$("importar").onclick = () => $("arquivo").click();
-$("arquivo").addEventListener("change", e => {
-  const arq = e.target.files[0]; if (!arq) return;
-  const r = new FileReader();
-  r.onload = async () => {
-    let novos;
-    try { const bruto = JSON.parse(r.result); if (!Array.isArray(bruto)) throw 0; novos = higienizar(bruto); if (!novos.length) throw 0; }
-    catch(err){ return avisar("Esse arquivo não é um backup deste app. Escolha um .json baixado aqui."); }
-    const meus = exemplo ? 0 : dados.length;
-    if (meus && !(await confirmar("Restaurar este backup?", `Os ${meus} lançamentos atuais serão trocados pelos ${novos.length} do arquivo.`, "Restaurar backup"))) return;
-    const antes = dados, eraExemplo = exemplo, metaAntes = meta;
-    if (exemplo) meta = 0;
-    exemplo = false; dados = novos; salvar(); filtroCat = filtroTipo = null; render();
-    avisar("Backup restaurado.", meus ? "Desfazer" : null, () => { dados = antes; exemplo = eraExemplo; meta = metaAntes; salvar(); render(); });
-  };
-  r.readAsText(arq); e.target.value = "";
-});
-$("limpar").onclick = async () => {
-  if (exemplo || !dados.length) return avisar("Não há lançamentos seus para apagar.");
-  if (!(await confirmar("Apagar todos os lançamentos?", `Os ${dados.length} lançamentos de todos os meses serão apagados deste navegador.`, "Apagar tudo"))) return;
-  const antes = dados;
-  dados = []; salvar(); filtroCat = filtroTipo = null; render();
-  avisar("Tudo apagado.", "Desfazer", () => { dados = antes; salvar(); render(); });
-};
-
-render();
-</script>
+<script src="js/base.js"></script>
+<script src="js/graficos.js"></script>
+<script src="js/enxame.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>
