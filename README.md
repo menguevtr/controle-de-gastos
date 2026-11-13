@@ -1,5 +1,7 @@
 # Meus gastos
 
+**[Ver o painel online](https://menguevtr.github.io/controle-de-gastos/)**
+
 Painel pessoal de gastos que roda no navegador. Sem cadastro, sem servidor e sem bibliotecas: HTML, CSS e JavaScript puros. Os lançamentos ficam guardados no `localStorage` do seu navegador.
 
 ## O que tem no painel
@@ -15,7 +17,7 @@ Painel pessoal de gastos que roda no navegador. Sem cadastro, sem servidor e sem
 ## Estrutura
 
 ```
-meus-gastos/
+controle-de-gastos/
 ├── index.html        Página e marcação do painel
 ├── css/
 │   └── style.css     Tema escuro, grade e componentes
@@ -32,29 +34,17 @@ Os scripts são carregados nessa ordem no fim do `index.html`. Não há etapa de
 
 ## Como rodar
 
+```bash
+git clone https://github.com/menguevtr/controle-de-gastos.git
+cd controle-de-gastos
+```
+
 Abra o `index.html` no navegador. Se preferir um servidor local:
 
 ```bash
 python3 -m http.server 8000
 # depois abra http://localhost:8000
 ```
-
-## Como subir para o GitHub
-
-Crie um repositório vazio no GitHub (sem README) e, dentro desta pasta:
-
-```bash
-git init
-git add .
-git commit -m "Painel de gastos com gráficos e enxame"
-git branch -M main
-git remote add origin https://github.com/SEU-USUARIO/meus-gastos.git
-git push -u origin main
-```
-
-### Publicar com o GitHub Pages
-
-No repositório, abra **Settings → Pages**, escolha **Deploy from a branch**, selecione a branch `main` e a pasta `/ (root)`. Em alguns minutos o painel fica disponível em `https://SEU-USUARIO.github.io/meus-gastos/`.
 
 ## Sobre os dados
 
