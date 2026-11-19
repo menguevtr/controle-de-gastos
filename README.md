@@ -6,7 +6,7 @@ Painel pessoal de gastos que roda no navegador. Sem cadastro, sem servidor e sem
 
 ## O que tem no painel
 
-- **Resumo do mês**: quanto sobrou ou faltou, quanto entrou, quanto saiu e a meta de gastos.
+- **Resumo do mês**: quanto sobrou/faltou, quanto entrou/saiu e a meta de gastos.
 - **Para onde foi o dinheiro**: rosca por categoria. Passe o mouse para destacar, clique para filtrar.
 - **Gasto acumulado no mês**: a linha sobe a cada gasto e mostra a distância até a meta.
 - **Enxame de gastos**: cada bolha é um gasto e o tamanho mostra o valor. Organize por dia ou por categoria, arraste as bolhas e clique para editar.
