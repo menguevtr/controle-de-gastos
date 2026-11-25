@@ -49,3 +49,9 @@ python3 -m http.server 8000
 ## Sobre os dados
 
 Os lançamentos ficam só no navegador em que foram criados, e cada endereço tem o seu armazenamento. Para levar os dados do arquivo local para a versão publicada (ou para outro aparelho), use **Baixar backup** em um e **Restaurar backup** no outro.
+
+Nada é enviado para servidor nenhum: o painel não faz requisições de rede e funciona até sem internet depois de aberto.
+
+---
+
+Feito por [Vitor Dorneles](https://github.com/menguevtr) · [LinkedIn](https://www.linkedin.com/in/vitor-mengue-dorneles/)
