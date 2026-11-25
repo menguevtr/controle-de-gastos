@@ -14,6 +14,14 @@ Painel pessoal de gastos que roda no navegador. Sem cadastro, sem servidor e sem
 - **Lançamentos**: lista por dia, com edição, exclusão e desfazer.
 - **Backup**: baixe e restaure seus dados em um arquivo `.json`.
 
+## Como usar
+
+1. Na primeira vez, o painel mostra lançamentos de exemplo. Clique em **Apagar exemplos e começar** quando quiser usar com os seus dados.
+2. Clique em **Novo lançamento**, escolha **Saiu** ou **Entrou**, preencha valor, descrição, categoria e data e clique em **Salvar lançamento**.
+3. Arraste o controle do card **Meta de gastos** para definir quanto você quer gastar no mês.
+4. Troque de mês com as setas ao lado do nome do mês, com as setas ← → do teclado ou deslizando o dedo para os lados no celular.
+5. Clique em **Entrou**, **Saiu** ou numa categoria da rosca para filtrar a lista de lançamentos.
+
 ## Estrutura
 
 ```
