@@ -4,6 +4,8 @@
 
 Painel pessoal de gastos que roda no navegador. Sem cadastro, sem servidor e sem bibliotecas: HTML, CSS e JavaScript puros. Os lançamentos ficam guardados no `localStorage` do seu navegador.
 
+![Painel Meus gastos com resumo do mês, gráfico de rosca por categoria e gasto acumulado](docs/painel.png)
+
 ## O que tem no painel
 
 - **Resumo do mês**: quanto sobrou/faltou, quanto entrou/saiu e a meta de gastos.
