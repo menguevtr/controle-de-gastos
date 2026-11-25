@@ -34,8 +34,7 @@ controle-de-gastos/
 │   ├── graficos.js   Rosca, gasto acumulado e últimos 6 meses (SVG)
 │   ├── enxame.js     Gráfico de enxame com física (colisão, arrastar)
 │   └── app.js        Tela: resumo, filtros, formulário e backup
-├── README.md
-└── .gitignore
+└── README.md
 ```
 
 Os scripts são carregados nessa ordem no fim do `index.html`. Não há etapa de build.
