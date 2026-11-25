@@ -1,5 +1,11 @@
 # Meus gastos
 
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)
+![Sem dependências](https://img.shields.io/badge/depend%C3%AAncias-nenhuma-2ea44f)
+[![GitHub Pages](https://img.shields.io/badge/online-GitHub%20Pages-222222?logo=githubpages&logoColor=white)](https://menguevtr.github.io/controle-de-gastos/)
+
 **[Ver o painel online](https://menguevtr.github.io/controle-de-gastos/)**
 
 Painel pessoal de gastos que roda no navegador. Sem cadastro, sem servidor e sem bibliotecas: HTML, CSS e JavaScript puros. Os lançamentos ficam guardados no `localStorage` do seu navegador.
